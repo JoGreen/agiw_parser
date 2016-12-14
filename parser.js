@@ -38,7 +38,7 @@ fs.readFile(file, function (err, data) {
          var cont = 0;
 
          //for(k=0;k<result.doc.page.length;k++) {
-
+            let title = result.doc.page[598].title;
             var text = result.doc.page[598].revision[0].text[0]._;
             var array_text = new Array();
             var i = 0;
@@ -125,7 +125,7 @@ fs.readFile(file, function (err, data) {
 
          first_sentence = first_sentence.replace(/\'|\[|\]|\((.*?)\)/ig,''); //toglie apici, quadre e tutto nelle tonde
          first_sentence = first_sentence.replace("  "," "); //elimina i doppi spazi
-         //first_sentence = first_sentence.replace(/\[(.*?)\|/ig,''); //fa rimanere solo gli anchor text delle secondary entities
+         first_sentence = first_sentence.replace(/\[\[[a-zA-Z0-9 ]*\|/ig,''); //fa rimanere solo gli anchor text delle secondary entities
          sentences[0] = first_sentence;
          callback(sentences);
 
