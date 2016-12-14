@@ -1,35 +1,94 @@
 var thesaurus = require('saurus');
-//require('dotenv').config();
-//var Wordnet = require('node-wordnet');
+var async = require('async');
 
-//var key = process.env.THESAURUS_KEY;
+/* prove waterfall--->
+async.waterfall([
+  function(callback){
+    callback(null, 10, 10);
+  },
+  function(arg1, arg2, callback){
+    var arg =arg1+arg2;
+    callback(null, arg);
+  }
+  ],
+  function(err, result){
+    console.log(result);
+  }
+  
+);
 
-/*
-thesaurus('activist').then(function(matches){ 
-  console.log(matches);
-  console.log('-----\n');
-});
 
+async.waterfall(
+    [
+        function(callback) {
+            callback(null, 'Yes', 'it');
+        },
+        function(arg1, arg2, callback) {
+            var caption = arg1 +' and '+ arg2;
+            callback(null, caption);
+        },
+        function(caption, callback) {
+            caption += ' works!';
+            callback(null, caption);
+        }
+    ],
+    function (err, caption) {
+        console.log(caption);
+        // Node.js and JavaScript Rock!
+    }
+);
 */
 
-module.exports=function(isa_words,callback){
-  console.log('thesaurus_seeds: '+isa_words);
-  var keywords=[];
-  for (i in isa_words){
+
+
+module.exports=function(isa_words,callback_){
+
+  let times = isa_words.length ;
+  let keywords=[];
+  let i = 0;
+
+  async.whilst(
+
+    function(){return i !== times },
+  
+    function(callback){
+    //console.log('thesaurus_seeds: '+isa_words);
+    console.log(i);
     thesaurus(isa_words[i]).then(function(matches){
+      console.log('---'+ isa_words[i]
+
+        +'+++');
         console.log('matches: '+matches.synonyms.length);
-        for(index in matches.synonyms){
-          //console.log(matches.synonyms[index]);
-          keywords.push(matches.synonyms[index]);
-          console.log(keywords);
-        }
-    })
-  };
-  console.log(keywords+'----\n\n\n++++++++++\n\n----\n+++');
-  callback(keywords);
+        keywords =keywords.concat(matches.synonyms);
+        i++;
+        callback(null, i);
+        
+      });
+    
+    },
+    function(err){
+      console.log('i at the end = ' + i);
+      callback_(keywords);
+    }
+    );
 }
   
+
+
+
 /*
+
+  //require('dotenv').config();
+  //var Wordnet = require('node-wordnet');
+
+  //var key = process.env.THESAURUS_KEY;
+  
+  thesaurus('activist').then(function(matches){ 
+  console.log(matches);
+  console.log('-----\n');
+  });
+
+
   "use strict";
   const Synonymator = require("synonymator");
 
@@ -47,8 +106,7 @@ module.exports=function(isa_words,callback){
   syn.synonymsVerb("time").then(function(data) {
     console.log(data)
   });
-  */
-  /*
+  
   var wordnet = new Wordnet();
 
   wordnet.lookup('corporation', function(results) {
@@ -68,7 +126,7 @@ module.exports=function(isa_words,callback){
     });
     });
 
-/*
+  
   wordnet.validForms('company', function(data){
 	 console.log('valid form = '+data+'\n\n\n\n---');
 	 wordnet.querySense(data[0],function(result){
