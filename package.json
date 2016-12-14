@@ -12,12 +12,9 @@
   "dependencies": {
     "async": "^2.1.4",
     "dotenv": "^2.0.0",
-    "node-wordnet": "^0.1.12",
     "pos": "^0.4.2",
     "saurus": "^1.1.1",
     "sbd": "^1.0.11",
-    "synonymator": "0.0.1",
-    "wndb-with-exceptions": "^3.0.1",
     "xml2js": "^0.4.17"
   }
 }
