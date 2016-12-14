@@ -1,10 +1,10 @@
 var isa = require('./isa');
 var thesaurus = require('./synonim');
 
-isa('brad.txt',function(seed){
-	console.log('pageseed: '+seed);
+isa('cannaviccio1.xml',function(seed){
+	console.log('\n---SEED---\n['+seed+']');
 	thesaurus(seed,function(syn){
-		console.log('pagemention.js-+-+-+-+-'+syn);
+		console.log('---SINONIMI---\n['+syn+']');
 	})
 
 })

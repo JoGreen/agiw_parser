@@ -53,12 +53,10 @@ module.exports=function(isa_words,callback_){
   
     function(callback){
     //console.log('thesaurus_seeds: '+isa_words);
-    console.log(i);
+    //console.log(i);
     thesaurus(isa_words[i]).then(function(matches){
-      console.log('---'+ isa_words[i]
-
-        +'+++');
-        console.log('matches: '+matches.synonyms.length);
+      //console.log('---'+ isa_words[i]+'+++');
+        console.log('\n'+matches.synonyms.length+' sinonimi trovati');
         keywords =keywords.concat(matches.synonyms);
         i++;
         callback(null, i);
@@ -67,7 +65,7 @@ module.exports=function(isa_words,callback_){
     
     },
     function(err){
-      console.log('i at the end = ' + i);
+      //console.log('i at the end = ' + i);
       callback_(keywords);
     }
     );
