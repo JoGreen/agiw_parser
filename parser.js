@@ -130,6 +130,7 @@ module.exports = function(file,callback) {
             first_sentence = first_sentence.replace(/\[\[[a-zA-Z0-9#*_\-+;:.@^'"!?£$%&\/() ]*\|/gi,''); //fa rimanere solo gli anchor text delle secondary entities
             first_sentence = first_sentence.replace(/\[/gi,''); //toglie tutte le quadre aperte rimaste
             first_sentence = first_sentence.toLowerCase();
+            first_sentence = first_sentence.replace(/\./ig,'');
             sentences[0] = first_sentence;
             callback(sentences);
 
