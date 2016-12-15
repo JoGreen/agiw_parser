@@ -3,7 +3,7 @@ var pos = require('pos');
 var thesaurus = require('./synonim.js');
 
 // JJ , VBG , JJ JJ JJ TO NNP -> pattern su cui ragionare (il nostro per ora taglia a JJ ,)
-let seed_regex =/(NN CC NN|NN , NN|NN , JJ NN|NN CC JJ NN|NN , CC NN|NNS CC NN|NNS CC NNS|NN CC NNS|NNS , NN|NNS , NNS|NN , NNS|NNS , JJ NN|NNS , JJ NNS|NN , JJ NNS|NNS CC JJ NN|NNS CC JJ NNS|NN CC JJ NNS|NNS , CC NN|NNS , CC NNS|NN , CC NNS|)/i;
+let seed_regex =/(NN CC NN|NN , NN|NN , JJ NN|NN CC JJ NN|NN , CC NN|NNS CC NN|NNS CC NNS|NN CC NNS|NNS , NN|NNS , NNS|NN , NNS|NNS , JJ NN|NNS , JJ NNS|NN , JJ NNS|NNS CC JJ NN|NNS CC JJ NNS|NN CC JJ NNS|NNS , CC NN|NNS , CC NNS|NN , CC NNS)/i;
 
 
 

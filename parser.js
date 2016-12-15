@@ -79,6 +79,8 @@ module.exports = function(file,callback) {
 
                var separators = ["\'\'\'\'\'","\'\'\'"];
                var first_sentence = sentences[0];
+
+               //primo elemento della pe è il titolo dell'articolo
                var pe = [title].concat(clean_text(first_sentence,separators,title));
 
                if(first_sentence.indexOf("'''"+pe[0]) !== -1) {
