@@ -6,6 +6,12 @@ let seed_regex =/(NN CC NN|NN , NN|NN , JJ NN|NN CC JJ NN|NN , CC NN|NNS CC NN|N
 module.exports = function(sentences,callback) {
 
 		let first_sentence = sentences[0];
+		first_sentence = first_sentence.replace(/\((.*?)\)/ig,''); //toglie apici, quadre e tutto nelle tonde
+        first_sentence = first_sentence.replace("  "," "); //elimina i doppi spazi
+        first_sentence = first_sentence.replace(/[0-9].*(st|nd|rd|th) /ig,''); //elimina le sigle di first, second, third, ecc., perché pos si arrabbia
+        first_sentence = first_sentence.toLowerCase();
+        first_sentence = first_sentence.replace(/\.|"|:|;/ig,'');
+            
 		let tagger = new pos.Tagger();
 
 		let regex = /( is a | is an | is the | are a | are an | are the | was a | was an | was the | were a | were an | were the )/i;
@@ -32,17 +38,21 @@ module.exports = function(sentences,callback) {
 			let isa_split = isa[isa.length-1].split(' '); // split vector della frase dopo is a --es: american actor and writer.
 			console.log('\n---ISA SPLIT---');
 			console.log(isa_split);
-
-			for (index = tag_split.length-1;index > -1;index--) {
-
-				if(tag_split[index] === 'NN' || tag_split[index] === 'NNS'){
-					isa_split[index] = isa_split[index].replace(/(\.|;|:)/,''); //se una parola è seguita da uno dei seguenti simboli senza uno spazio la puliamo per evitare che thesaurus poi dia problemi
-					seed.push(isa_split[index]);
-					if(tag.split(seed_regex).length < 3) {
-						break;
+			if(isa_split.length === tag_split.length){
+				for (index = tag_split.length-1;index > -1;index--) {
+	
+					if(tag_split[index] === 'NN' || tag_split[index] === 'NNS'){
+						isa_split[index] = isa_split[index].replace(/(\.|;|:)/,''); //se una parola è seguita da uno dei seguenti simboli senza uno spazio la puliamo per evitare che thesaurus poi dia problemi
+						seed.push(isa_split[index]);
+						if(tag.split(seed_regex).length < 3) {
+							break;
+						}
 					}
+					tag_split.pop();
 				}
-				tag_split.pop();
+			}
+			else{
+				seed.push('+++++++errore+++++++++++');
 			}
 		}
 		
