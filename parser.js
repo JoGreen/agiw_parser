@@ -23,6 +23,8 @@ function clean_text(sentence,separators) {
 
 module.exports = function(file,callback) {
 
+   var out = [];
+
    fs.readFile(file, function (err, data) {
 
       if (err) {
@@ -37,7 +39,7 @@ module.exports = function(file,callback) {
 
             var cont = 0;
 
-            for(k=456;k<460/*result.doc.page.length*/;k++) {
+            for(k=0;k<6/*result.doc.page.length*/;k++) {
 
                let title = result.doc.page[k].title;
                var text = result.doc.page[k].revision[0].text[0]._;
@@ -101,8 +103,8 @@ module.exports = function(file,callback) {
                if(pe.length == 0) {
                   cont++;
                }
-               
-               /*
+
+
                se = text.split('[[');
 
                for(i=1;i<se.length;i++) {
@@ -110,8 +112,10 @@ module.exports = function(file,callback) {
                }
 
                se.pop();
-               */
-            
+               
+               let callback_obj = {title: title, pe: pe, se: se};
+               out.push(callback_obj);
+
                //console.log("Articolo "+k+" stampato");
 
                /*
@@ -124,6 +128,7 @@ module.exports = function(file,callback) {
 
             //console.log(cont+' miss');
 
+            /*
             first_sentence = first_sentence.replace(/\'|\]|\((.*?)\)/ig,''); //toglie apici, quadre e tutto nelle tonde
             first_sentence = first_sentence.replace("  "," "); //elimina i doppi spazi
             first_sentence = first_sentence.replace(/[0-9].*(st|nd|rd|th) /ig,''); //elimina le sigle di first, second, third, ecc., perché pos si arrabbia
@@ -132,9 +137,12 @@ module.exports = function(file,callback) {
             first_sentence = first_sentence.toLowerCase();
             first_sentence = first_sentence.replace(/\.|"/ig,'');
             sentences[0] = first_sentence;
-            callback(sentences);
+            */
 
          }
+
+         callback(out);
+
       });
    });
 }

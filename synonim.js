@@ -1,6 +1,45 @@
 var thesaurus = require('saurus');
 var async = require('async');
 
+module.exports=function(isa_words,callback_) {
+
+  let times = isa_words.length ;
+  let keywords=[];
+  let i = 0;
+
+  async.whilst(
+
+    function(){
+      return i !== times
+    },
+  
+    function(callback) {
+
+      thesaurus(isa_words[i]).then(function(matches) {
+
+        console.log('\n'+matches.synonyms.length+' sinonimi trovati');
+        keywords =keywords.concat(matches.synonyms);
+        //i++;
+        //callback(null,i);    
+
+      }).catch(function(e) {
+        console.log("c'è stato un errore\n");
+      }).then(function() {
+        console.log('--------------------'+i+'--------------------------');
+        i++;
+        callback(null,i);
+      });
+    
+    },
+
+    function(err){
+      callback_(keywords);
+    }
+
+  );
+}
+
+
 /* prove waterfall--->
 async.waterfall([
   function(callback){
@@ -16,7 +55,6 @@ async.waterfall([
   }
   
 );
-
 
 async.waterfall(
     [
@@ -39,41 +77,7 @@ async.waterfall(
 );
 */
 
-
-
-module.exports=function(isa_words,callback_){
-
-  let times = isa_words.length ;
-  let keywords=[];
-  let i = 0;
-
-  async.whilst(
-
-    function(){return i !== times },
   
-    function(callback){
-    //console.log('thesaurus_seeds: '+isa_words);
-    //console.log(i);
-    thesaurus(isa_words[i]).then(function(matches){
-      //console.log('---'+ isa_words[i]+'+++');
-        console.log('\n'+matches.synonyms.length+' sinonimi trovati');
-        keywords =keywords.concat(matches.synonyms);
-        i++;
-        callback(null, i);
-        
-      });
-    
-    },
-    function(err){
-      //console.log('i at the end = ' + i);
-      callback_(keywords);
-    }
-    );
-}
-  
-
-
-
 /*
 
   //require('dotenv').config();
