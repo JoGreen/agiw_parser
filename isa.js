@@ -35,10 +35,11 @@ module.exports = function(sentences,callback) {
 			tag_split = tag.split(' ');
 
 			isa[isa.length-1] = isa[isa.length-1].replace(/,/g,' ,'); //se c' è una virgola introduce uno spazio prima per evitare che isa_split e tag_split abbiano lunghezza diversa
+			isa[isa.length-1] = isa[isa.length-1].replace(/\'/g," ' ");
 			let isa_split = isa[isa.length-1].split(' '); // split vector della frase dopo is a --es: american actor and writer.
 			console.log('\n---ISA SPLIT---');
 			console.log(isa_split);
-			if(isa_split.length === tag_split.length){
+			//if(isa_split.length === tag_split.length){
 				for (index = tag_split.length-1;index > -1;index--) {
 	
 					if(tag_split[index] === 'NN' || tag_split[index] === 'NNS'){
@@ -50,10 +51,7 @@ module.exports = function(sentences,callback) {
 					}
 					tag_split.pop();
 				}
-			}
-			else{
-				seed.push('+++++++errore+++++++++++');
-			}
+			//}
 		}
 		
 		console.log(seed);
