@@ -16,7 +16,7 @@ sentences('wiki_00.xml',function(docs_sentences) {
 	async.whilst(
 
 		function() {
-			return i !== 2000;
+			return i !== docs_sentences.length;
 		},
 
 		function(callback) {
@@ -26,7 +26,8 @@ sentences('wiki_00.xml',function(docs_sentences) {
 				function(callback_) {
 					isa(docs_sentences[i].sentences,function(seeds) {
 						docs_sentences[i].seeds = seeds;
-						callback_(null,seeds);
+						
+						setTimeout(() => { callback_(null,seeds); });
 					});
 				},
 
@@ -54,22 +55,12 @@ sentences('wiki_00.xml',function(docs_sentences) {
 
 			);
 
-			/*
-				isa(docs_sentences[i].sentences,function(seeds) {
-					//console.log('\n---SEEDS---\n['+seeds+']');
-					docs_sentences[i].seeds = seeds;
-					thesaurus(seeds,function(syn){
-						//console.log('---SINONIMI---\n['+syn+']');
-						docs_sentences[i].synonyms = syn;
-					});
-				});
-			*/
 
 		},
 
 		function(err) {
-			for(i=0 ; i<2000 ; i++ ) {
-				fs.appendFile("output.txt",'Seeds: ['+docs_sentences[i].seeds.toString()+']'+'\r\n'+'Sinonimi: ['+docs_sentences[i].synonyms.toString()+']\r\n\r\n',function(err) {
+			for(i=0 ; i<docs_sentences.length ; i++ ) {
+				fs.appendFile("output_data/output.txt",'Seeds: ['+docs_sentences[i].seeds.toString()+']'+'\r\n'+'Sinonimi: ['+docs_sentences[i].synonyms.toString()+']\r\n\r\n',function(err) {
 					if(err) {
 						return console.log(err);
 					}
