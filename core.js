@@ -39,7 +39,7 @@ sentences('wiki_00.xml',function(docs_sentences) {
 				},
 
 				function(callback_) {
-					console.log(process.memoryUsage());
+			//		console.log(process.memoryUsage());
 					console.log('-----------------'+i+'-----------------------');
 					//console.log(docs_sentences[i].seeds);
 					//console.log(docs_sentences[i].synonyms);
@@ -60,7 +60,10 @@ sentences('wiki_00.xml',function(docs_sentences) {
 
 		function(err) {
 			for(i=0 ; i<docs_sentences.length ; i++ ) {
-				fs.appendFile("output_data/output.txt",'Seeds: ['+docs_sentences[i].seeds.toString()+']'+'\r\n'+'Sinonimi: ['+docs_sentences[i].synonyms.toString()+']\r\n\r\n',function(err) {
+				fs.appendFile("output_data/output.txt",'********\r\nFrase: '+docs_sentences[i].sentences[0]+
+					'\r\nSeeds: ['+docs_sentences[i].seeds.toString()+']'+'\r\n'+
+					'Sinonimi: ['+docs_sentences[i].synonyms.toString()+']\r\n\r\n',
+					function(err) {
 					if(err) {
 						return console.log(err);
 					}
