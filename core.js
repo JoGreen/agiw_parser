@@ -1,4 +1,5 @@
 var isa = require('./isa');
+var isa_bis = require('./isa2');
 var thesaurus = require('./synonim');
 var sentences = require('./sentences');
 var async = require('async');
@@ -24,7 +25,7 @@ sentences('wiki_00.xml',function(docs_sentences) {
 			async.waterfall([
 				
 				function(callback_) {
-					isa(docs_sentences[i].sentences,function(seeds) {
+					isa_bis(docs_sentences[i].sentences,function(seeds) {
 						docs_sentences[i].seeds = seeds;
 						
 						setTimeout(() => { callback_(null,seeds); });
