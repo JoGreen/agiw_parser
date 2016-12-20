@@ -5,13 +5,15 @@ let seed_regex =/(NN CC NN|NN , NN|NN , JJ NN|NN CC JJ NN|NN , CC NN|NNS CC NN|N
 
 module.exports = function(sentences,callback) {
 
+
 		let first_sentence = sentences[0];
-		first_sentence = first_sentence.replace(/\((.*?)\)/ig,''); //toglie apici, quadre e tutto nelle tonde
+/*		first_sentence = first_sentence.replace(/\((.*?)\)/ig,''); //toglie apici, quadre e tutto nelle tonde
         first_sentence = first_sentence.replace("  "," "); //elimina i doppi spazi
         first_sentence = first_sentence.replace(/[0-9].*(st|nd|rd|th) /ig,''); //elimina le sigle di first, second, third, ecc., perché pos si arrabbia
         first_sentence = first_sentence.toLowerCase();
         first_sentence = first_sentence.replace(/\.|"|:|;/ig,'');
-            
+    
+*/        
 		let tagger = new pos.Tagger();
 
 		let regex = /( is a | is an | is the | are a | are an | are the | was a | was an | was the | were a | were an | were the )/i;
