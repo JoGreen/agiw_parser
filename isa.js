@@ -7,7 +7,9 @@ module.exports = function(sentences,callback) {
 
 
 		let first_sentence = sentences[0];
-/*		first_sentence = first_sentence.replace(/\((.*?)\)/ig,''); //toglie apici, quadre e tutto nelle tonde
+		console.log(first_sentence);
+/*		
+		first_sentence = first_sentence.replace(/\((.*?)\)/ig,''); //toglie apici, quadre e tutto nelle tonde
         first_sentence = first_sentence.replace("  "," "); //elimina i doppi spazi
         first_sentence = first_sentence.replace(/[0-9].*(st|nd|rd|th) /ig,''); //elimina le sigle di first, second, third, ecc., perché pos si arrabbia
         first_sentence = first_sentence.toLowerCase();
