@@ -5,10 +5,20 @@ var sentences = require('./sentences');
 var async = require('async');
 var fs = require('fs');
 var thesaurus_bis = require('./thes2');
+var parser = require('./parser_new');
 
 //parser --> {titolo, pe, se, sentences}
 //isa input = first sentence
 //isa output = lista di seed 
+
+
+let parser_out = [];
+
+parser('cannaviccio1.xml',function(list) {
+	parser_out = list;
+	//console.log(parser_out[0]);
+});
+
 
 sentences('wiki_00.xml',function(docs_sentences) {
 
@@ -60,6 +70,7 @@ sentences('wiki_00.xml',function(docs_sentences) {
 		},
 
 		function(err) {
+			/*
 			for(i=0 ; i<docs_sentences.length ; i++ ) {
 				fs.appendFile("output_data/output.txt",'********\r\nFrase: '+docs_sentences[i].sentences[0]+
 					'\r\nSeeds: ['+docs_sentences[i].seeds.toString()+']'+'\r\n'+
@@ -70,6 +81,8 @@ sentences('wiki_00.xml',function(docs_sentences) {
 					}
 				});
 			}
+			*/
+			console.log(parser_out[3]);
 		}
 	);
 
