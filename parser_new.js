@@ -100,8 +100,10 @@ module.exports = function(file,callback) {
               var id = result.doc.page[k].id;
               var text = result.doc.page[k].revision[0].text[0]._;
 
-              if(text.indexOf("#REDIRECT")!=-1)
+              if(text.indexOf("#REDIRECT")!=-1) {
+                out.push({id: id, pe: [title]});
                 continue;
+              }
 
               var array_text = new Array();
               var i = 0;
@@ -165,8 +167,10 @@ module.exports = function(file,callback) {
 
               //console.log("TESTO PULITO: "+testo.join('\n'));
 
-              if(testo.length==0) // TESTI VUOTI DOVE L'ENTITA PRIMARIA NON è ESPRESSA IN NERETTO O L'ARTICOLO HA SOLO FATTI TIPO SOPRA
+              if(testo.length === 0) {
+                out.push({id: id, pe: [title]}); // TESTI VUOTI DOVE L'ENTITA PRIMARIA NON è ESPRESSA IN NERETTO O L'ARTICOLO HA SOLO FATTI TIPO SOPRA
                 continue;
+              }
 
               var pe = title.concat(clean_text(first_sentence,separators));
 
@@ -211,7 +215,7 @@ module.exports = function(file,callback) {
 
               pe = unique(pe);
 
-              let callback_obj = {title: title, id: id, pe: pe};
+              let callback_obj = {id: id, pe: pe};
               out.push(callback_obj);
 
               console.log("Articolo "+k+" stampato");
