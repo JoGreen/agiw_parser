@@ -7,6 +7,8 @@ module.exports = function(file,callback) {
 		if(err) {
 			return console.error(err);
 		}
+		let docs_id = data.toString().match(/<doc [^>]*>/ig);
+		
 
 		data = data.toString().replace(/<\/doc>/ig,'');
 		let docs = data.split(/<doc.*?>/ig);
@@ -20,8 +22,8 @@ module.exports = function(file,callback) {
 			docs[i] = docs[i].replace(/\((.*?)\)/ig,'');
 			docs[i] = docs[i].replace(/[0-9]{1,50}(st|nd|rd|th) /ig,'');
 			docs[i] = docs[i].replace("  "," ");
+			let id = docs_id[i].match(/[0-9]+/i)[0];
 			
-
 
 			let sentences = tokenizer.sentences(docs[i]);
 			docs_sentences[i] ={sentences: sentences};
@@ -31,7 +33,10 @@ module.exports = function(file,callback) {
 		    first_sentence = first_sentence.replace(/\.|"|:|;/ig,'');
 		    first_sentence = first_sentence.replace(/\//ig, ' '); //ho tolto dalla regex l'eliminazione dei trattini
 		    first_sentence = first_sentence.replace(/ ,/ig,','); // alcune frasi hanno qualche spazio virgola come refuso
+		    
+		    docs_sentences[i].id = id;
 		    docs_sentences[i].sentences[0] = first_sentence;
+
 		    fs.appendFile('output_data/first_sentence.txt', docs_sentences[i].sentences[0]+'\r\n');
 		}
 		callback(docs_sentences);
