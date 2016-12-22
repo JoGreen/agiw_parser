@@ -13,8 +13,6 @@ if(words.length !== 0){
 	  	function(){return i !== words.length},
 	  	function(callback){
 	  		syn = syn.concat(updated_thesaurus.find(words[i]));
-	    	//console.log(list[0] +'\n');
-	    	//syn.concat(list);
 	    	i++;
 	    	callback(null, i);
 		},

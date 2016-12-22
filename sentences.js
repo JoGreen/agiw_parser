@@ -11,8 +11,10 @@ module.exports = function(file,callback) {
 		
 
 		data = data.toString().replace(/<\/doc>/ig,'');
-		let docs = data.split(/<doc.*?>/ig);
+		let docs = data.split(/<doc [^>]*>/ig);
+
 		docs.shift();
+		fs.appendFile('output_data/docs_id',''+docs.length);
 
 		let docs_sentences = [];
 		let first_sentence = ''
@@ -26,7 +28,9 @@ module.exports = function(file,callback) {
 			
 
 			let sentences = tokenizer.sentences(docs[i]);
-			docs_sentences[i] ={sentences: sentences};
+
+			docs_sentences[i] ={id: id, sentences: sentences};
+
 			first_sentence = docs_sentences[i].sentences[0];
 		    first_sentence = first_sentence.toLowerCase();
 		    first_sentence = first_sentence.replace(/ [!"£$%&\/\(\)#°§*+\/-a-zA-Z]*[0-9]{1,50}[a-zA-Z!"£$%&\/\(\)#°§*+\/-]*/ig, ''); //leva gli alfanumerici
@@ -34,7 +38,7 @@ module.exports = function(file,callback) {
 		    first_sentence = first_sentence.replace(/\//ig, ' '); //ho tolto dalla regex l'eliminazione dei trattini
 		    first_sentence = first_sentence.replace(/ ,/ig,','); // alcune frasi hanno qualche spazio virgola come refuso
 		    
-		    docs_sentences[i].id = id;
+
 		    docs_sentences[i].sentences[0] = first_sentence;
 
 		    fs.appendFile('output_data/first_sentence.txt', docs_sentences[i].sentences[0]+'\r\n');
