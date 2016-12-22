@@ -1,64 +1,113 @@
 var pos = require('pos');
+var tokenizer = require('sbd');
 
-// JJ , VBG , JJ JJ JJ TO NNP -> pattern su cui ragionare (il nostro per ora taglia a JJ ,)
-let seed_regex =/(NN CC NN|NN , NN|NN , JJ NN|NN CC JJ NN|NN , CC NN|NNS CC NN|NNS CC NNS|NN CC NNS|NNS , NN|NNS , NNS|NN , NNS|NNS , JJ NN|NNS , JJ NNS|NN , JJ NNS|NNS CC JJ NN|NNS CC JJ NNS|NN CC JJ NNS|NNS , CC NN|NNS , CC NNS|NN , CC NNS)/i;
+module.exports = function(sentence,callback) {
 
-module.exports = function(sentences,callback) {
+	let abbreviations = ["c","ca","e.g","et al","etc","i.e","p.a","Dr","Gen","Hon","Mr","Mrs","Ms","Prof","Rev","Sr","Jr","St","Assn","Ave","Dept","est","fig","inc","mt","no","oz","sq","st","vs"];
 
+	let options = {
+	    "newline_boundaries" : false,
+	    "html_boundaries"    : false,
+	    "sanitize"           : false,
+	    "allowed_tags"       : false,
+	    "abbreviations"      : abbreviations
+	};
 
-		let first_sentence = sentences[0];
-		console.log(first_sentence);
-/*		
-		first_sentence = first_sentence.replace(/\((.*?)\)/ig,''); //toglie apici, quadre e tutto nelle tonde
-        first_sentence = first_sentence.replace("  "," "); //elimina i doppi spazi
-        first_sentence = first_sentence.replace(/[0-9].*(st|nd|rd|th) /ig,''); //elimina le sigle di first, second, third, ecc., perché pos si arrabbia
-        first_sentence = first_sentence.toLowerCase();
-        first_sentence = first_sentence.replace(/\.|"|:|;/ig,'');
-    
-*/        
-		let tagger = new pos.Tagger();
-
-		let regex = /( is a | is an | is the | are a | are an | are the | was a | was an | was the | were a | were an | were the )/i;
-		let isa = first_sentence.split(regex); //becca solo il primo verbo essere..ottimo.
-		
-		var seed = [];
-		console.log('---FRASE---\n'+first_sentence);
-		if (isa.length === 3) {
-
-			let words = new pos.Lexer().lex(isa[isa.length-1]);
-			let taggedWords = tagger.tag(words);
-			let tag = '';
-			for (i in taggedWords){
-				tag += taggedWords[i][1]+' '; // postag della prima frase dopo 'is a' 
-			};
-			console.log('\n---TAG---\n'+tag);
-			regex= /( VBN | VB | VBD | VBG | VBP | VBZ | IN )/i;
-			tag = tag.split(regex)[0];
-			console.log(tag);
-
-			tag_split = tag.split(' ');
-
-			isa[isa.length-1] = isa[isa.length-1].replace(/,/g,' ,'); //se c' è una virgola introduce uno spazio prima per evitare che isa_split e tag_split abbiano lunghezza diversa
-			isa[isa.length-1] = isa[isa.length-1].replace(/\'/g," ' ");
-			let isa_split = isa[isa.length-1].split(' '); // split vector della frase dopo is a --es: american actor and writer.
-			console.log('\n---ISA SPLIT---');
-			console.log(isa_split);
-			//if(isa_split.length === tag_split.length){
-				for (index = tag_split.length-1;index > -1;index--) {
+	let tokenization = tokenizer.sentences(sentence,options);
+	if(typeof tokenization[0] !== 'undefined') {
+		sentence = tokenization[0];
+	}
 	
-					if(tag_split[index] === 'NN' || tag_split[index] === 'NNS'){
-						isa_split[index] = isa_split[index].replace(/(\.|;|:)/,''); //se una parola è seguita da uno dei seguenti simboli senza uno spazio la puliamo per evitare che thesaurus poi dia problemi
-						seed.push(isa_split[index]);
-						if(tag.split(seed_regex).length < 3) {
-							break;
-						}
-					}
-					tag_split.pop();
-				}
-			//}
+	// Regex di pulizia della prima frase
+	sentence = sentence.toLowerCase();  //tutto minuscolo
+	sentence = sentence.replace(/\((.*?)\)/ig,'');  //toglie le parentesi tonde
+	sentence = sentence.replace(/[0-9]{1,50}(st|nd|rd|th) /ig,'');  //toglie 1st,2nd,ecc.
+	sentence = sentence.replace("  "," ");  //toglie i doppi spazi
+	sentence = sentence.replace(/ [!"£$%&\/\(\)#°§*+\/-a-zA-Z]*[0-9]{1,50}[a-zA-Z!"£$%&\/\(\)#°§*+\/-]*/ig, '');  //toglie gli alfanumerici
+	sentence = sentence.replace(/\'|\.|"|:|;/ig,'');  //toglie la punteggiatura tranne le virgole
+    sentence = sentence.replace(/\//ig, ' ');  //toglie le slash
+    sentence = sentence.replace(/ ,/ig,',');  //toglie gli spazi-virgola
+    sentence = sentence.replace(/\[\[[a-zA-Z0-9#*_\-+;:.@^'"!?£$%&\/() ]*\|/gi,''); //fa rimanere solo gli anchor text delle secondary entities
+    sentence = sentence.replace(/\[|\]/ig,'');  //toglie le quadre rimaste
+
+	console.log(sentence);
+
+	//Individuazione pattern isa
+	let regex = /( is a | is an | is the | is any | is one of | are a | are an | are the | are any | was a | was an | was the | was any | was one of | were a | were an | were the | were any )/i;
+	let isa = sentence.split(regex);
+
+	var seeds = [];
+
+	if(isa.length >= 3) {
+
+		isa = isa[2];
+		let tagger = new pos.Tagger();
+		let words = new pos.Lexer().lex(isa);
+		let tagged_words = tagger.tag(words);
+		console.log(isa);
+
+
+		// rende aggettivi le parole con i trattini
+		for(k in tagged_words) {
+			if(tagged_words[k][0].indexOf("-") !== -1) {
+				tagged_words[k][1] = 'JJ';
+			}
+		}
+
+		// stampa tags
+		for(k in tagged_words) {
+			console.log(tagged_words[k][1]);
 		}
 		
-		console.log(seed);
-		callback(seed);
- 	
-}
+		let i = 0;
+		let init_verbs_index = 0;
+		let init_verbs_bool = false;
+
+		// non considera eventuali verbi o prp prima del primo nome
+		while(i<tagged_words.length) {
+			if(tagged_words[i][1] === 'VBN' || tagged_words[i][1] === 'VBD' || tagged_words[i][1] === 'VB' || tagged_words[i][1] === 'VBG' || tagged_words[i][1] === 'VBP' || tagged_words[i][1] === 'VBZ' || tagged_words[i][1] === 'PRP') {
+				init_verbs_index = i;
+				init_verbs_bool = true;
+				i++;
+			}
+			else if(tagged_words[i][1] === 'NN' || tagged_words[i][1] === 'NNS') {
+				break;
+			}
+			else {
+				i++;
+			}
+		}
+
+		// se c'è almeno un verbo prima del primo nome parte da dopo l'ultimo di questi verbi altrimenti no
+		if(init_verbs_bool) {
+			i = init_verbs_index+1;
+		}
+		else {
+			i = 0;
+		}
+
+		// applica l'automa
+		while(i < tagged_words.length) {
+			if(tagged_words[i][1] === 'JJ' || tagged_words[i][1] === 'JJR' || tagged_words[i][1] === 'JJS' || tagged_words[i][1] === 'POS' || tagged_words[i][1] === ',' || tagged_words[i][1] === 'CC' || tagged_words[i][1] === 'DT' || tagged_words[i][1] === 'RB' || tagged_words[i][1] === 'RBR' || tagged_words[i][1] === 'RBS') {
+				i++;
+			}
+			else if((typeof tagged_words[i+1] !== 'undefined') && ((tagged_words[i][1] === 'NN' && tagged_words[i+1][1] === '"' && tagged_words[i+2][1] === 'PRP') || (tagged_words[i][1] === 'NNS' && tagged_words[i+1][1] === '"' && tagged_words[i+2][1] === 'PRP'))) {
+				i = i+3;
+			}
+			else if(tagged_words[i][1] === 'NN' || tagged_words[i][1] === 'NNS') {
+				while((typeof tagged_words[i+1] !== 'undefined') && (tagged_words[i+1][1] === 'NN' || tagged_words[i+1][1] === 'NNS')) {
+					i++;
+				}
+				seeds.push(tagged_words[i][0]);
+				i++;
+			}
+			else {
+				break;
+			}
+		}
+
+	}
+
+	callback(seeds);
+	
+};
