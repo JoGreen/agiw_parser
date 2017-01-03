@@ -1,5 +1,6 @@
 var pos = require('pos');
 var tokenizer = require('sbd');
+var singularize = require('pluralize');
 
 
 function is_number(word) {
@@ -7,7 +8,7 @@ function is_number(word) {
 }
 
 function is_nationality(word) {
-	return word === 'algerian' || word === 'australian' || word === 'american' || word === 'belgian' || word === 'brazilian' || word === 'european' || word === 'italian' || word === 'hungarian' || word === 'moroccan' || word === 'norwegian' || word === 'greek' || word === 'iraqi' || word === 'israeli' || word === 'thai' || word === 'chinese' || word === 'portuguese' || word === 'russian' || word === 'slovaks' || word === 'swiss'
+	return word === 'algerian' || word === 'australian' || word === 'american' || word === 'belgian' || word === 'brazilian' || word === 'european' || word === 'italian' || word === 'hungarian' || word === 'moroccan' || word === 'norwegian' || word === 'greek' || word === 'iraqi' || word === 'israeli' || word === 'thai' || word === 'chinese' || word === 'japanese' || word === 'portuguese' || word === 'russian' || word === 'slovaks' || word === 'swiss'
 	|| word === 'british' || word === 'english' || word === 'french' || word === 'irish' || word === 'spanish' || word === 'dutch' || word === 'welsh' || word === 'danish' || word === 'finnish' || word === 'polish' || word === 'swedish' || word === 'turkish';
 }
 
@@ -109,7 +110,7 @@ module.exports = function(sentence,callback) {
 				while((typeof tagged_words[i+1] !== 'undefined') && (tagged_words[i+1][1] === 'NN' || tagged_words[i+1][1] === 'NNS')) {
 					i++;
 				}
-				seeds.push(tagged_words[i][0]);
+				seeds.push(singularize.singular(tagged_words[i][0]));
 				i++;
 			}
 			else {
