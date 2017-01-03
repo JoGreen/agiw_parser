@@ -10,6 +10,7 @@ module.exports = function(articolo){
 	keywords = keywords.concat(pe);
 	keywords = keywords.concat(seeds);
 	keywords = keywords.concat(synonyms);
+	keywords = keywords.concat([articolo.pronoun]);
 
 	keywords = unique(keywords);
 
