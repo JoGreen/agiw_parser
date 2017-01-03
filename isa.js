@@ -1,6 +1,17 @@
 var pos = require('pos');
 var tokenizer = require('sbd');
 
+/*
+function is_number(word) {
+	return word === 'one' || word === 'two' || word === 'three' || word === 'four' || word === 'five' || word === 'six' || word === 'seven' || word === 'eight' || word === 'nine' || word === 'ten' || word === 'first' || word === 'second' || word === 'third' || word === 'fourth' || word === 'fifth' || word === 'sixth' || word === 'seventh' || word === 'eighth' || word === 'ninth' || word === 'tenth';
+}
+
+function is_nationality(word) {
+	return word === 'Algerian' || word === 'Australian' || word === 'American' || word === 'Belgian' || word === 'Brazilian' || word === 'European' || 'Italian' || word === 'Hungarian' || word === 'Moroccan' || word === 'Norwegian' || word === 'Greek' || word === 'Iraqi' || word === 'Israeli' || word === 'Thai' || word === 'Chinese' || word === 'Portuguese' || word === 'Russian' || word === 'Slovaks' || word === 'Swiss'
+	|| word === 'British' || word === 'English' || word === 'French' || word === 'Irish' || word === 'Spanish' || word === 'Dutch' || word === 'Welsh' || word === 'Danish' || word === 'Finnish' || word === 'Polish' || word === 'Swedish' || word === 'Turkish';
+}
+*/
+
 module.exports = function(sentence,callback) {
 
 	let abbreviations = ["c","ca","e.g","et al","etc","i.e","p.a","Dr","Gen","Hon","Mr","Mrs","Ms","Prof","Rev","Sr","Jr","St","Assn","Ave","Dept","est","fig","inc","mt","no","oz","sq","st","vs"];
@@ -14,10 +25,11 @@ module.exports = function(sentence,callback) {
 	};
 
 	let tokenization = tokenizer.sentences(sentence,options);
+
 	if(typeof tokenization[0] !== 'undefined') {
 		sentence = tokenization[0];
 	}
-	
+
 	// Regex di pulizia della prima frase
 	sentence = sentence.toLowerCase();  //tutto minuscolo
 	sentence = sentence.replace(/\((.*?)\)/ig,'');  //toglie le parentesi tonde
@@ -30,10 +42,10 @@ module.exports = function(sentence,callback) {
     sentence = sentence.replace(/\[\[[a-zA-Z0-9#*_\-+;:.@^'"!?£$%&\/() ]*\|/gi,''); //fa rimanere solo gli anchor text delle secondary entities
     sentence = sentence.replace(/\[|\]/ig,'');  //toglie le quadre rimaste
 
-	console.log(sentence);
+	//console.log(sentence);
 
 	//Individuazione pattern isa
-	let regex = /( is a | is an | is the | is any | is one of | are a | are an | are the | are any | was a | was an | was the | was any | was one of | were a | were an | were the | were any )/i;
+	let regex = /( is a | is an | is the | is any | is one of | is generally | are a | are an | are the | are any | are generally | was | was a | was an | was the | was any | was one of | was generally | were a | were an | were the | were any | were generally | refers to a | refers to an | refers to the | refers to any | is | are | was | were )/i;
 	let isa = sentence.split(regex);
 
 	var seeds = [];
@@ -44,21 +56,21 @@ module.exports = function(sentence,callback) {
 		let tagger = new pos.Tagger();
 		let words = new pos.Lexer().lex(isa);
 		let tagged_words = tagger.tag(words);
-		console.log(isa);
+		//console.log(isa);
 
 
 		// rende aggettivi le parole con i trattini
 		for(k in tagged_words) {
-			if(tagged_words[k][0].indexOf("-") !== -1) {
+			if(tagged_words[k][0].indexOf("-") !== -1 /*|| is_number(tagged_words[k][0]) || is_nationality(tagged_words[k][0])*/) {
 				tagged_words[k][1] = 'JJ';
 			}
 		}
 
 		// stampa tags
 		for(k in tagged_words) {
-			console.log(tagged_words[k][1]);
+			//console.log(tagged_words[k][1]);
 		}
-		
+
 		let i = 0;
 		let init_verbs_index = 0;
 		let init_verbs_bool = false;
@@ -109,5 +121,5 @@ module.exports = function(sentence,callback) {
 	}
 
 	callback(seeds);
-	
+
 };

@@ -4,11 +4,16 @@ var tokenizer = require('sbd');
 var unique = require('array-unique');
 
 function clean_text(sentence,separators) {
+    //console.log("FRASE: "+sentence); // PER VEDERE DOVE NON ESTRAIAMO
 
-      var array_entity = sentence.split(new RegExp(separators.join('|'),'g'));
+  //  console.log("\nFRASE: "+sentence.replace(/\(.*?\)/g,'')); // PER VEDERE DOVE NON ESTRAIAMO
 
-      for(i=0;i<array_entity.length;i++)
+
+      var array_entity = sentence.replace(/\(.*?\)/g,'').split(new RegExp(separators.join('|'),'g'));
+      for(i=0;i<array_entity.length;i++){
+        //console.log("entita: "+array_entity[i]); // PER VEDERE DOVE NON ESTRAIAMO
          array_entity.splice(i,1);
+       }
 
       for(i in array_entity){
         if(array_entity[i].length>=80){
@@ -107,6 +112,7 @@ module.exports = function(file,callback) {
               var i = 0;
 
               text = text.replace(/ \'\'{{.*}}\'\' /g,'');
+              //console.log("TESTO PULITO2: \n"+text);
 
               text = remove_graffe(text,title);
 
@@ -134,23 +140,31 @@ module.exports = function(file,callback) {
               for(i = 0; i < array_text.length; i++)
                 text = text.replace(array_text[i],'');
 
-              var regex = /<ref>.*?<\/ref>|<(?:.|\n)*?>|&lt;.*&gt;|<!--.*-->|&quot;/g;
+                //console.log("TESTO PULITO2: \n"+text);
+
+              var regex = /<ref>(.*?)<\/ref>?|<ref .*?>(.*?)<\/ref>?|<ref .*?\/>|<(?:.|[\r\n])*?>|&lt;.*&gt;|<!--.*-->|&quot;|&lowast;/g;
               text = text.replace(regex, '');
+              text = text.replace(/&nbsp;|&ndash;/g, ' ');
+              text = text.replace(/\(.*?\)/g,'')
+              //console.log("TESTO PULITO2: \n"+text);
 
               var frasi = text.split('\n');
               var testo = [];
 
               var separators = ["\'\'\'\'\'","\'\'\'"];
 
+
+
               // PER PRENDERE SOLO FRASI NON VUOTE OPPURE CON UN NERETTO
               for( var i = 0; i < frasi.length; i++ ) {
-                if(frasi[i]!="" && frasi[i].indexOf(".")!=-1 || frasi[i].indexOf("'''")!=-1){
+                if(frasi[i]!="" && frasi[i].indexOf(".")!=-1 && frasi[i].indexOf("*")==-1 || frasi[i].indexOf("'''")!=-1){
                     testo.push(frasi[i]);
                   }
               }
+              //console.log("TESTO PULITO2: \n"+testo.join('\n'));
 
-               
                var first_sentence = '';
+
                for(var i = 0; i < testo.length; i++){
                  if(testo[i].indexOf("\'\'\'")!=-1 || testo[i].indexOf("\'\'\'\'\'")!=-1){
                     first_sentence = testo[i];
@@ -162,7 +176,7 @@ module.exports = function(file,callback) {
               //console.log("TESTO PULITO: "+testo.join('\n'));
 
               var pe = title.concat(clean_text(first_sentence,separators));
-
+              //console.log("ENTITA: "+pe);
 
               /*
               var se = testo.split('[[');
@@ -175,12 +189,44 @@ module.exports = function(file,callback) {
               se.pop();
               */
 
+
+              var pe_temp = [];
+
+              for(j in pe){
+                pe[j] = pe[j].replace(/\|.*?]]/g,' ');
+                pe[j] = pe[j].replace(/\[|\]/g,'');
+                pe_temp.push(pe[j]);
+              }
+
+              pe = pe_temp;
               pe = unique(pe);
 
-              let callback_obj = {id: id, pe: pe, first_sentence: first_sentence, text: testo};
+              //console.log("ENTITA: "+pe);
+
+
+              let abbreviations = ["c","ca","e.g","et al","etc","i.e","p.a","Dr","Gen","Hon","Mr","Mrs","Ms","Prof","Rev","Sr","Jr","St","Assn","Ave","Dept","est","fig","inc","mt","no","oz","sq","st","vs"];
+
+            	let options = {
+            	    "newline_boundaries" : false,
+            	    "html_boundaries"    : false,
+            	    "sanitize"           : false,
+            	    "allowed_tags"       : false,
+            	    "abbreviations"      : abbreviations
+            	};
+
+            	var array_temp = tokenizer.sentences(testo.join('\n'),options);
+
+              //console.log("testo:\n "+testo);
+
+              //for(var i=0;array_temp.length;i++)
+                //console.log("FRASE: "+i+" "+array_temp[i]+"\n");
+
+
+              let callback_obj = {id: id, pe: pe, first_sentence: first_sentence, text: array_temp};
+
               out.push(callback_obj);
 
-              console.log("Articolo "+k);
+              console.log("Articolo "+k+" "+pe);
 
               /*
               fs.appendFile("output_data/output_parser.txt", '{Frase: '+first_sentence+'\n'+first_sentence.split('\n').length+'}\r\n'+'['+pe.toString()+'] \r\n\r\n\r\n', function(err) {
