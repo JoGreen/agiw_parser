@@ -61,7 +61,7 @@ module.exports = function(articolo){
 				});
 			}
 			else {
-				var reg = new RegExp(". "+keywords[j]+"[^a-zA-Z]","ig");
+				var reg = new RegExp("\. "+keywords[j]+"[^a-zA-Z]","ig");
 				text[i] = text[i].replace(reg,function(match){
 					if(text[i].indexOf('[[')!==-1 && text[i].indexOf(keywords[j]) > text[i].indexOf('[[') && text[i].indexOf(keywords[j]) < text[i].indexOf(']]')) {
 						return match;
