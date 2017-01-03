@@ -15,7 +15,7 @@ module.exports = function(sentences){
 	let first_compare = (he_count.matching.length >= she_count.matching.length ) ? he_count : she_count;
 	let second_compare = (it_count.matching.length >= they_count.matching.length ) ? it_count : they_count;
 
-	let final_compare = (first_compare.matching.length >= second_compare.matching.length) ? first_compare : second_compare;
+	let final_compare = (second_compare.matching.length >= first_compare.matching.length) ? second_compare : first_compare;
 	console.log(final_compare.matching.length+'  '+final_compare.pronoun);
 	return final_compare.pronoun;
 

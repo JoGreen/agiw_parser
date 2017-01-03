@@ -7,6 +7,11 @@ module.exports = function(articolo){
 	var seeds = articolo.seeds;
 	var synonyms = articolo.synonyms;
 	var keywords = [];
+	if(articolo.pronoun === 'he' || articolo.pronoun === 'she'){
+		pe[0] = pe[0].replace(/\(|\)/ig,'');
+		let split_pe = pe[0].split(' ');
+		pe = pe.concat(split_pe);
+	}
 	keywords = keywords.concat(pe);
 	keywords = keywords.concat(seeds);
 	keywords = keywords.concat(synonyms);
