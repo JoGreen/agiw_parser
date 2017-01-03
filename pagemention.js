@@ -31,30 +31,12 @@ module.exports = function(articolo){
 
 			if(pe.indexOf(keywords[j])!=-1)
 					tag = '<PE>';
-			else{
-				if(seeds.indexOf(keywords[j])!=-1)
+			else if(seeds.indexOf(keywords[j])!=-1)
 					tag = '<SEED>';
-				else
+				else if(synonyms.indexOf(keywords[j]) !== -1)
 					tag = '<SYNONYM>';
-			}
+					else tag='<PRONOUN>';
 
-			// let pe_regex = new RegExp(docs_list[i].pe.join(' | '),'ig');
-			// let seeds_regex = new RegExp(docs_list[i].seeds.join('|'), 'ig');
-			// let synonyms_regex = new RegExp(docs_list[i].synonyms.join('|'), 'ig');
-			//
-			// let matching = [];
-			//
-			// //matching.push('\nPE');
-			// matching = (paragraph.match(pe_regex) !== null) ? matching.concat(paragraph.match(pe_regex)) : matching;
-			// //matching.push('SEEDS');
-			// matching = (paragraph.match(seeds_regex) !== null) ? matching.concat(paragraph.match(seeds_regex)) : matching;
-			// //matching.push('SYNONYMS');
-			// matching = (paragraph.match(synonyms_regex) !== null) ? matching.concat(paragraph.match(synonyms_regex)) : matching;
-			//
-			//
-			// paragraph = paragraph.replace(pe_regex, '<PE>');
-			// paragraph = paragraph.replace(seeds_regex, '<SEED>');
-			// paragraph = paragraph.replace(synonyms_regex, '<SYNONYM>');
 
 			if(tag === '<PE>'){
 				var reg = new RegExp("[^a-zA-Z]"+keywords[j]+"[^a-zA-Z]","ig");
@@ -78,7 +60,16 @@ module.exports = function(articolo){
 						return match.charAt(0)+tag+'The '+keywords[j]+tag+match.charAt(match.length-1);
 				});
 			}
-
+			else {
+				var reg = new RegExp(". "+keywords[j]+"[^a-zA-Z]","ig");
+				text[i] = text[i].replace(reg,function(match){
+					if(text[i].indexOf('[[')!==-1 && text[i].indexOf(keywords[j]) > text[i].indexOf('[[') && text[i].indexOf(keywords[j]) < text[i].indexOf(']]')) {
+						return match;
+					}
+					else
+						return match.charAt(0)+tag + keywords[j]+tag+match.charAt(match.length-1);
+				});
+			}
 			//
 			// if(matching.length !== 0){
 			// 	wiki_docs[i].text.push(paragraph);

@@ -62,7 +62,7 @@ parser('cannaviccio1.xml',function(parser_out) {
 
 				pagemention_count[i] = pagemention(parser_out[i]);
 
-				fs.appendFile("output_data/output_pagemention.txt",'********\r\nID: '+pagemention_count[i].id +' PE: '+parser_out[i].pe[0]+'\r\nKeywords: '+pagemention_count[i].keywords+'Pronoun: '+ parser_out[i].pronoun+'\r\nPE count: '+pagemention_count[i].primary_entity+'\r\nSeeds: '+pagemention_count[i].seeds+'\r\nSinonimi: '+pagemention_count[i].syn+'\r\nTESTO TAGGATO:\n'+parser_out[i].text.join('\n')+'\r\n\r\n',function(err) {
+				fs.appendFile("output_data/output_pagemention.txt",'********\r\nID: '+pagemention_count[i].id +' PE: '+parser_out[i].pe[0]+'\r\nKeywords: '+pagemention_count[i].keywords+'\r\nPronoun: '+ parser_out[i].pronoun+'\r\nPE count: '+pagemention_count[i].primary_entity+'\r\nSeeds: '+pagemention_count[i].seeds+'\r\nSinonimi: '+pagemention_count[i].syn+'\r\nTESTO TAGGATO:\n'+parser_out[i].text.join('\n')+'\r\n\r\n',function(err) {
 					if(err) {
 						return console.log(err);
 					}
