@@ -1,16 +1,15 @@
 var pos = require('pos');
 var tokenizer = require('sbd');
 
-/*
+
 function is_number(word) {
 	return word === 'one' || word === 'two' || word === 'three' || word === 'four' || word === 'five' || word === 'six' || word === 'seven' || word === 'eight' || word === 'nine' || word === 'ten' || word === 'first' || word === 'second' || word === 'third' || word === 'fourth' || word === 'fifth' || word === 'sixth' || word === 'seventh' || word === 'eighth' || word === 'ninth' || word === 'tenth';
 }
 
 function is_nationality(word) {
-	return word === 'Algerian' || word === 'Australian' || word === 'American' || word === 'Belgian' || word === 'Brazilian' || word === 'European' || 'Italian' || word === 'Hungarian' || word === 'Moroccan' || word === 'Norwegian' || word === 'Greek' || word === 'Iraqi' || word === 'Israeli' || word === 'Thai' || word === 'Chinese' || word === 'Portuguese' || word === 'Russian' || word === 'Slovaks' || word === 'Swiss'
-	|| word === 'British' || word === 'English' || word === 'French' || word === 'Irish' || word === 'Spanish' || word === 'Dutch' || word === 'Welsh' || word === 'Danish' || word === 'Finnish' || word === 'Polish' || word === 'Swedish' || word === 'Turkish';
+	return word === 'algerian' || word === 'australian' || word === 'american' || word === 'belgian' || word === 'brazilian' || word === 'european' || word === 'italian' || word === 'hungarian' || word === 'moroccan' || word === 'norwegian' || word === 'greek' || word === 'iraqi' || word === 'israeli' || word === 'thai' || word === 'chinese' || word === 'portuguese' || word === 'russian' || word === 'slovaks' || word === 'swiss'
+	|| word === 'british' || word === 'english' || word === 'french' || word === 'irish' || word === 'spanish' || word === 'dutch' || word === 'welsh' || word === 'danish' || word === 'finnish' || word === 'polish' || word === 'swedish' || word === 'turkish';
 }
-*/
 
 module.exports = function(sentence,callback) {
 
@@ -61,7 +60,7 @@ module.exports = function(sentence,callback) {
 
 		// rende aggettivi le parole con i trattini
 		for(k in tagged_words) {
-			if(tagged_words[k][0].indexOf("-") !== -1 /*|| is_number(tagged_words[k][0]) || is_nationality(tagged_words[k][0])*/) {
+			if(tagged_words[k][0].indexOf("-") !== -1 || is_number(tagged_words[k][0]) || is_nationality(tagged_words[k][0])) {
 				tagged_words[k][1] = 'JJ';
 			}
 		}
