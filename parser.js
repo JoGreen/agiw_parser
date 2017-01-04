@@ -28,6 +28,30 @@ function clean_text(sentence,separators) {
       return array_entity;
 };
 
+function remove_tonde(text){
+  var text2;
+  var aperte;
+
+  while (text.indexOf('(')!=-1){
+    text2 = text;
+
+    while(text2.indexOf('(')!=-1){
+      aperte = text2.substring(text2.indexOf('('));
+      text2 = text2.substring(text2.indexOf('(')+1);
+    }
+
+    var chiuse = aperte.indexOf(')')+1;
+    if (chiuse==0){
+      text = text.replace(aperte, aperte.replace('(',''));
+    }
+    else {
+      var temp = aperte.substring(0,chiuse);
+      text = text.replace(temp,'');
+    }
+
+  }
+  return text;
+  };
 
 function remove_graffe(text,title){
 
@@ -100,7 +124,7 @@ module.exports = function(file,callback) {
            for(k=0;k<result.doc.page.length;k++) {
 
               var title = result.doc.page[k].title;
-              var id = +result.doc.page[k].id;
+              var id = result.doc.page[k].id;
               var text = result.doc.page[k].revision[0].text[0]._;
 
               if(text.indexOf("#REDIRECT")!=-1) {
@@ -115,7 +139,7 @@ module.exports = function(file,callback) {
               //console.log("TESTO PULITO2: \n"+text);
 
               text = remove_graffe(text,title);
-
+              text = remove_tonde(text);
               text = text.replace(/\[\[File:.*?\.?\]\]\n|\[\[File:.*?\.?\]\]|\[\[Image:.*\.?\]\]|\[\[Image:.*\.?\]\]\n|\[http:.*?\]|\[https:.*?\]/g, '');
 
               var text2 = text;
@@ -145,14 +169,14 @@ module.exports = function(file,callback) {
               var regex = /<ref>(.*?)<\/ref>?|<ref .*?>(.*?)<\/ref>?|<ref .*?\/>|<(?:.|[\r\n])*?>|&lt;.*&gt;|<!--.*-->|&quot;|&lowast;/g;
               text = text.replace(regex, '');
               text = text.replace(/&nbsp;|&ndash;/g, ' ');
-              text = text.replace(/\(.*?\)/g,'')
+              text = text.replace(/gallery caption=.*\/gallery/g,'');
+
               //console.log("TESTO PULITO2: \n"+text);
 
               var frasi = text.split('\n');
               var testo = [];
 
               var separators = ["\'\'\'\'\'","\'\'\'"];
-
 
 
               // PER PRENDERE SOLO FRASI NON VUOTE OPPURE CON UN NERETTO
@@ -162,6 +186,7 @@ module.exports = function(file,callback) {
                   }
               }
               //console.log("TESTO PULITO2: \n"+testo.join('\n'));
+
 
                var first_sentence = '';
 
@@ -178,17 +203,6 @@ module.exports = function(file,callback) {
               var pe = title.concat(clean_text(first_sentence,separators));
               //console.log("ENTITA: "+pe);
 
-              /*
-              var se = testo.split('[[');
-
-              for(i=0;i<se.length;i++) {
-                 se[i] = se[i].substr(0, se[i].indexOf(']]'));
-                 //console.log("ENTITA NUMMERO "+i+": "+se[i]);
-              }
-
-              se.pop();
-              */
-
 
               var pe_temp = [];
 
@@ -202,27 +216,45 @@ module.exports = function(file,callback) {
               pe = unique(pe);
 
               //console.log("ENTITA: "+pe);
+              var testo_intero = testo.join('\n');
+              var se = testo_intero.split('[[');
+
+              for(i=0;i<se.length;i++) {
+                 var temp = se[i].substr(0, se[i].indexOf(']]'));
+
+                 if(temp.indexOf('|')!=-1)
+                     se[i] = temp.substr(temp.indexOf('|')+1);
+                else
+                    se[i] = temp;
+                    testo_intero = testo_intero.replace(temp,se[i]);
+
+              }
+              se.pop();
 
 
-              let abbreviations = ["c","ca","e.g","et al","etc","i.e","p.a","Dr","Gen","Hon","Mr","Mrs","Ms","Prof","Rev","Sr","Jr","St","Assn","Ave","Dept","est","fig","inc","mt","no","oz","sq","st","vs"];
 
-            	let options = {
-            	    "newline_boundaries" : false,
-            	    "html_boundaries"    : false,
-            	    "sanitize"           : false,
-            	    "allowed_tags"       : false,
-            	    "abbreviations"      : abbreviations
-            	};
+              let abbreviations = ["Mt","c","ca","e.g","et al","etc","i.e","p.a","Dr","Gen","Hon","Mr","Mrs","Ms","Prof","Rev","Sr","Jr","St","Assn","Ave","Dept","est","fig","inc","mt","no","oz","sq","st","vs"];
 
-            	var array_temp = tokenizer.sentences(testo.join('\n'),options);
+              let options = {
+                  "newline_boundaries" : false,
+                  "html_boundaries"    : false,
+                  "sanitize"           : false,
+                  "allowed_tags"       : false,
+                  "abbreviations"      : abbreviations
+              };
 
-              //console.log("testo:\n "+testo);
+              var array_temp = tokenizer.sentences(testo_intero,options);
+              var frasi_utili = [];
 
-              //for(var i=0;array_temp.length;i++)
-                //console.log("FRASE: "+i+" "+array_temp[i]+"\n");
+              for(var i=0;i<array_temp.length;i++){
+                if(array_temp[i].indexOf('[[')!=-1)
+                  frasi_utili.push(array_temp[i]);
+              }
+
+              //console.log("testo:\n "+frasi_utili.join('\n'));
 
 
-              let callback_obj = {id: id, pe: pe, first_sentence: first_sentence, text: array_temp};
+              let callback_obj = {id: id, pe: pe, first_sentence: first_sentence, text: frasi_utili};
 
               out.push(callback_obj);
 
