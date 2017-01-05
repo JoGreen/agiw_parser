@@ -215,7 +215,15 @@ module.exports = function(file,callback) {
               pe = pe_temp;
               pe = unique(pe);
 
-              //console.log("ENTITA: "+pe);
+              let pe_check = pe;
+
+              for(z in pe_check) {
+                pe_check[z] = pe_check[z].toLowerCase();
+              }
+
+              pe_check = unique(pe_check);
+
+              /*console.log("ENTITA: "+pe);
               var testo_intero = testo.join('\n');
               var se = testo_intero.split('[[');
 
@@ -226,11 +234,64 @@ module.exports = function(file,callback) {
                      se[i] = temp.substr(temp.indexOf('|')+1);
                 else
                     se[i] = temp;
-                    testo_intero = testo_intero.replace(temp,se[i]);
+                testo_intero = testo_intero.replace(temp,se[i]);
 
               }
-              se.pop();
+              se.shift();
+              */
 
+              //console.log("ENTITA: "+pe);
+              var testo_intero = testo.join('\n');
+              var se = testo_intero.match(/\[\[[a-zA-Z 0-9.'|()-]+\]\]/g);
+              
+              se = (se) ?  unique(se): [];
+              
+              
+              //console.log(se);
+              console.log('--------');
+              let anchor = [];
+              for(n in se){
+                anchor.push(se[n].replace(/\[\[/g,''));
+                if(se[n].indexOf('|') !== -1)
+                     anchor[n] =  anchor[n].substr(anchor[n].indexOf('|')+1);
+                anchor[n] = anchor[n].replace(/\]\]/g,'');
+                anchor[n] = anchor[n].toLowerCase();
+              };
+              anchor = unique(anchor);
+
+              anchor = anchor.filter(function(val) {
+                return pe_check.indexOf(val) === -1;
+              })
+
+              console.log(anchor.indexOf('alabama'));
+
+              anchor.sort(function(a,b){
+                return a.length - b.length;
+              });
+
+              let reg_nested_square = /\[\[[a-zé°à#§ù,.\-_!?"£%&\/<>| ]*\[\[[a-zé°à#§ù,.\-_!?"£%&\/<>| ]*\]\][a-zé°à#§ù,.\-_!?"£%&\/<>| ]*\]\]/ig;
+              let reg_most_internal_square = /\[\[[^[\]]*[a-z;\-."&%$£!^:,è_é§ùàòç{}' ]*\]\]/ig;
+
+              for(i=0;i<anchor.length;i++) {
+             /*   let temp = se[i].replace(/\[\[/g,'');
+
+                 if(se[i].indexOf('|') !== -1)
+                     temp =  temp.substr(temp.indexOf('|')+1);
+                  temp = temp.replace(/\]\]/g,'');
+            */    if(anchor[i].indexOf('(') === -1 && anchor[i].indexOf(')') === -1) {
+                    let reg_se = new RegExp("[^[|]"+anchor[i]+'[^a-z]|^'+anchor[i],'ig');
+                    testo_intero = testo_intero.replace(reg_se, function(match){ 
+                      return match.charAt(0)+'[['+anchor[i]+']]'+match.charAt(match.length-1);
+                    });
+
+
+                    while(reg_nested_square.test(testo_intero)) {
+                      testo_intero = testo_intero.replace(reg_nested_square,function(match){
+                        return match.replace(reg_most_internal_square,anchor[i]);
+                      })
+                    }
+                  }
+              }
 
 
               let abbreviations = ["Mt","c","ca","e.g","et al","etc","i.e","p.a","Dr","Gen","Hon","Mr","Mrs","Ms","Prof","Rev","Sr","Jr","St","Assn","Ave","Dept","est","fig","inc","mt","no","oz","sq","st","vs"];
