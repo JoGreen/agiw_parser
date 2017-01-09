@@ -120,6 +120,7 @@ module.exports = function(sentence,callback) {
 
 	}
 
+	console.log(sentence);
 	callback(seeds);
 
 };

@@ -6,8 +6,6 @@ function is_a_person(splitted_title,all_names){
 	//	console.log('regex: '+reg);
 		for ( j in splitted_title){
 			if(reg.test(splitted_title[j])){
-				console.log('regex: '+reg);
-				console.log(splitted_title[j]+' is a person');
 				return true;
 			}
 		}
@@ -24,10 +22,25 @@ module.exports = function(articolo,names){
 	var keywords = [];
 	
 	if(articolo.pronoun === 'he' || articolo.pronoun === 'she'){
-		pe[0] = pe[0].replace(/\(|\)/ig,'');
+		pe[0] = pe[0].replace(/\((.*)\)/ig,'');
 		let split_pe = pe[0].split(' ');
-		if(is_a_person(split_pe,names))
-			pe = pe.concat(split_pe);
+		for (x in split_pe) {
+			if(split_pe[x] === 'the' || split_pe[x] === 'of' ||  split_pe[x] === 'in' || split_pe[x] === 'on' || split_pe[x] === 'to' || split_pe[x] === 'mr.' || split_pe[x] === 'mrs.' || split_pe[x] === '&')
+				split_pe.splice(x,split_pe.length-x);
+		}
+		if(is_a_person(split_pe,names)) {
+			pe = pe.concat([split_pe[split_pe.length-1]]);
+		}
+	}
+
+	let reg_is_company = / inc\.| dept\.| corp\.| co\./i;
+	if(reg_is_company.test(pe[0])) {
+		let split_pe = pe[0].split(' ');
+		for(q in split_pe) {
+			if(split_pe[q].match(reg_is_company)!==null)
+				split_pe.splice(q,1);
+		}
+		pe = pe.concat([split_pe.join(' ')]);
 	}
 	
 	keywords = keywords.concat(pe);
