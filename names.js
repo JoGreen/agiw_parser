@@ -2,6 +2,7 @@ var fs = require('fs');
 var csv = require('csv-parser');
 var async = require('async');
 
+
 let files=[];
 files.push('CSV_Database_Of_First_And_Last_Names/CSV_Database_Of_First_Names.csv');
 files.push('CSV_Database_Of_First_And_Last_Names/CSV_Database_Of_Last_Names.csv')
@@ -24,13 +25,16 @@ function read(file, callback_){
 	})
 };
 
+module.exports = {
 
-async.map(files,read, function(err, result){
-	fs.writeFile('output_data/names.txt', names, function(err){
-		if(err)console.log(err);
-	});
-	
-});
+	names : function(callback){
+		async.map(files,read, function(err, result){
+		//console.log(names);
+		callback(names);
+		});
+	}
+}
+
 
 /*
 fs.createReadStream('CSV_Database_Of_First_And_Last_Names/CSV_Database_Of_First_Names.csv')
