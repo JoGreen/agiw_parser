@@ -4,14 +4,9 @@ var tokenizer = require('sbd');
 var unique = require('array-unique');
 
 function clean_text(sentence,separators) {
-    //console.log("FRASE: "+sentence); // PER VEDERE DOVE NON ESTRAIAMO
-
-  //  console.log("\nFRASE: "+sentence.replace(/\(.*?\)/g,'')); // PER VEDERE DOVE NON ESTRAIAMO
-
-
+    
       var array_entity = sentence.replace(/\(.*?\)/g,'').split(new RegExp(separators.join('|'),'g'));
       for(i=0;i<array_entity.length;i++){
-        //console.log("entita: "+array_entity[i]); // PER VEDERE DOVE NON ESTRAIAMO
          array_entity.splice(i,1);
        }
 
@@ -23,7 +18,7 @@ function clean_text(sentence,separators) {
       }
 
       if(array_entity.length==0)
-        console.log("!!!ERROR!!!"); // PER VEDERE DOVE NON ESTRAIAMO
+        console.log("!!!ERROR!!!");
 
       return array_entity;
 };
@@ -63,7 +58,7 @@ function remove_graffe(text,title){
 
     text = text.replace(s,'');
     text2 = text2.replace(s,'');
-  } // TOGLIE TUTTE QUESTE STRUTTURE CHE SONO TIPO INFOBOX
+  }
 
    var chiuse;
    var temp;
@@ -93,9 +88,9 @@ function remove_graffe(text,title){
 
     if(temp.toUpperCase().indexOf(title[0].toUpperCase()+"'''|")!=-1){
         text = text.replace(temp,"'''"+title+"'''");
-      } // PER L'ENTITA SCRITTE IN MODO PARTICOLARE PER SEGNALARE LA PRONUNCIA
+      }
     else{
-        if(temp.toUpperCase().indexOf(title[0].toUpperCase())!=-1) // // PER L'ENTITA SCRITTE IN MODO PARTICOLARE PER SEGNALARE LA LINGUA
+        if(temp.toUpperCase().indexOf(title[0].toUpperCase())!=-1)
           text = text.replace(temp,title);
           else
           text = text.replace(temp,'');
@@ -136,7 +131,6 @@ module.exports = function(file,callback) {
               var i = 0;
 
               text = text.replace(/ \'\'{{.*}}\'\' /g,'');
-              //console.log("TESTO PULITO2: \n"+text);
 
               text = remove_graffe(text,title);
               text = remove_tonde(text);
@@ -164,47 +158,34 @@ module.exports = function(file,callback) {
               for(i = 0; i < array_text.length; i++)
                 text = text.replace(array_text[i],'');
 
-                //console.log("TESTO PULITO2: \n"+text);
-
               var regex = /<ref>(.*?)<\/ref>?|<ref .*?>(.*?)<\/ref>?|<ref .*?\/>|<(?:.|[\r\n])*?>|&lt;.*&gt;|<!--.*-->|&quot;|&lowast;/g;
               text = text.replace(regex, '');
               text = text.replace(/&nbsp;|&ndash;/g, ' ');
               text = text.replace(/gallery caption=.*\/gallery/g,'');
-
-              //console.log("TESTO PULITO2: \n"+text);
 
               var frasi = text.split('\n');
               var testo = [];
 
               var separators = ["\'\'\'\'\'","\'\'\'"];
 
-
-              // PER PRENDERE SOLO FRASI NON VUOTE OPPURE CON UN NERETTO
               for( var i = 0; i < frasi.length; i++ ) {
                 if(frasi[i]!="" && frasi[i].indexOf(".")!=-1 && frasi[i].indexOf("*")==-1 || frasi[i].indexOf("'''")!=-1){
                     testo.push(frasi[i]);
                   }
               }
-              //console.log("TESTO PULITO2: \n"+testo.join('\n'));
+      
+             var first_sentence = '';
 
-
-               var first_sentence = '';
-
-               for(var i = 0; i < testo.length; i++){
-                 if(testo[i].indexOf("\'\'\'")!=-1 || testo[i].indexOf("\'\'\'\'\'")!=-1){
-                    first_sentence = testo[i];
-                    break;
-                  }
+             for(var i = 0; i < testo.length; i++){
+               if(testo[i].indexOf("\'\'\'")!=-1 || testo[i].indexOf("\'\'\'\'\'")!=-1){
+                  first_sentence = testo[i];
+                  break;
                 }
+              }
 
+              let pe = title.concat(clean_text(first_sentence,separators));
 
-              //console.log("TESTO PULITO: "+testo.join('\n'));
-
-              var pe = title.concat(clean_text(first_sentence,separators));
-              //console.log("ENTITA: "+pe);
-
-
-              var pe_temp = [];
+              let pe_temp = [];
 
               for(j in pe){
                 pe[j] = pe[j].replace(/\|.*?]]/g,' ');
@@ -223,31 +204,11 @@ module.exports = function(file,callback) {
 
               pe_check = unique(pe_check);
 
-              /*console.log("ENTITA: "+pe);
-              var testo_intero = testo.join('\n');
-              var se = testo_intero.split('[[');
-
-              for(i=0;i<se.length;i++) {
-                 var temp = se[i].substr(0, se[i].indexOf(']]'));
-
-                 if(temp.indexOf('|')!=-1)
-                     se[i] = temp.substr(temp.indexOf('|')+1);
-                else
-                    se[i] = temp;
-                testo_intero = testo_intero.replace(temp,se[i]);
-
-              }
-              se.shift();
-              */
-
-              //console.log("ENTITA: "+pe);
               var testo_intero = testo.join('\n');
               var se = testo_intero.match(/\[\[[a-zA-Z 0-9.'|()-]+\]\]/g);
               
               se = (se) ?  unique(se): [];
               
-              
-              //console.log(se);
               console.log('--------');
               let anchor = [];
               for(n in se){
@@ -263,36 +224,15 @@ module.exports = function(file,callback) {
                 return pe_check.indexOf(val) === -1;
               })
 
-              console.log(anchor.indexOf('alabama'));
+              for(w in anchor) {
+                if(anchor[w] === '' || anchor[w].length === 1) {
+                  anchor.splice(w,1);
+                }
+              }
 
               anchor.sort(function(a,b){
                 return a.length - b.length;
               });
-
-              let reg_nested_square = /\[\[[a-zé°à#§ù,.\-_!?"£%&\/<>| ]*\[\[[a-zé°à#§ù,.\-_!?"£%&\/<>| ]*\]\][a-zé°à#§ù,.\-_!?"£%&\/<>| ]*\]\]/ig;
-              let reg_most_internal_square = /\[\[[^[\]]*[a-z;\-."&%$£!^:,è_é§ùàòç{}' ]*\]\]/ig;
-
-              for(i=0;i<anchor.length;i++) {
-             /*   let temp = se[i].replace(/\[\[/g,'');
-
-                 if(se[i].indexOf('|') !== -1)
-                     temp =  temp.substr(temp.indexOf('|')+1);
-                  temp = temp.replace(/\]\]/g,'');
-            */    if(anchor[i].indexOf('(') === -1 && anchor[i].indexOf(')') === -1) {
-                    let reg_se = new RegExp("[^[|]"+anchor[i]+'[^a-z]|^'+anchor[i],'ig');
-                    testo_intero = testo_intero.replace(reg_se, function(match){ 
-                      return match.charAt(0)+'[['+anchor[i]+']]'+match.charAt(match.length-1);
-                    });
-
-
-                    while(reg_nested_square.test(testo_intero)) {
-                      testo_intero = testo_intero.replace(reg_nested_square,function(match){
-                        return match.replace(reg_most_internal_square,anchor[i]);
-                      })
-                    }
-                  }
-              }
-
 
               let abbreviations = ["Mt","c","ca","e.g","et al","etc","i.e","p.a","Dr","Gen","Hon","Mr","Mrs","Ms","Prof","Rev","Sr","Jr","St","Assn","Ave","Dept","est","fig","inc","mt","no","oz","sq","st","vs"];
 
@@ -305,29 +245,12 @@ module.exports = function(file,callback) {
               };
 
               var array_temp = tokenizer.sentences(testo_intero,options);
-              var frasi_utili = [];
-
-              for(var i=0;i<array_temp.length;i++){
-                if(array_temp[i].indexOf('[[')!=-1)
-                  frasi_utili.push(array_temp[i]);
-              }
-
-              //console.log("testo:\n "+frasi_utili.join('\n'));
-
-
-              let callback_obj = {id: id, pe: pe, first_sentence: first_sentence, text: frasi_utili};
+              
+              let callback_obj = {id: id, pe: pe, first_sentence: first_sentence, se: anchor, text: array_temp};
 
               out.push(callback_obj);
 
               console.log("Articolo "+k+" "+pe);
-
-              /*
-              fs.appendFile("output_data/output_parser.txt", '{Frase: '+first_sentence+'\n'+first_sentence.split('\n').length+'}\r\n'+'['+pe.toString()+'] \r\n\r\n\r\n', function(err) {
-                 if(err) {
-                    return console.log(err);
-                 }
-              });
-              */
 
            }
 

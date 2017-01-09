@@ -1,6 +1,21 @@
 var unique = require('array-unique');
 
-module.exports = function(articolo){
+function is_a_person(splitted_title,all_names){
+	for (i in all_names){
+		let reg = new RegExp('^('+all_names[i]+')$','i');
+	//	console.log('regex: '+reg);
+		for ( j in splitted_title){
+			if(reg.test(splitted_title[j])){
+				console.log('regex: '+reg);
+				console.log(splitted_title[j]+' is a person');
+				return true;
+			}
+		}
+	}
+	return false;
+};
+
+module.exports = function(articolo,names){
 
 	var text = articolo.text;
 	var pe = articolo.pe;
@@ -11,7 +26,8 @@ module.exports = function(articolo){
 	if(articolo.pronoun === 'he' || articolo.pronoun === 'she'){
 		pe[0] = pe[0].replace(/\(|\)/ig,'');
 		let split_pe = pe[0].split(' ');
-		pe = pe.concat(split_pe);
+		if(is_a_person(split_pe,names))
+			pe = pe.concat(split_pe);
 	}
 	
 	keywords = keywords.concat(pe);
@@ -51,7 +67,6 @@ module.exports = function(articolo){
 			if(tag === '<PE>' && text[i].indexOf('<PE>') === -1){
 
 				var reg = new RegExp("[^a-zA-Z[|]"+keywords[j]+"[ ']","ig");
-				//let reg_pe_into_square = new RegExp('\[\[[a-z0-9é°à#§ù,.\-_!?"£%&\/<>| ]*'+keywords[j]+'[a-z0-9é°à#§ù,.\-_!?"£%&\/<>| ]*\]\]','ig');
 
 				if(text[i].indexOf(keywords[j])===0){
 						text[i] = text[i].replace(keywords[j],tag+keywords[j]+tag_closed);
@@ -111,19 +126,39 @@ module.exports = function(articolo){
 
 	}
 
-	var testo = text.join('\n');
+	let anchor = articolo.se;
 
-	//let reg_nested_pe = /<PE>[a-zé°à#§ù,.\-_!?"£%&\/<>| ]*<PE>[a-zé°à#§ù,.\-_!?"£%&\/<>| ]*<\/PE>[a-zé°à#§ù,.\-_!?"£%&\/<>| ]*<\/PE>/ig;
-	
-	/*
-	while(reg_nested_pe.test(testo)) {
-		testo = testo.replace(reg_nested_pe,function(match){
+	let reg_nested_square = /\[\[[a-zé°à#§ù,.\-_!?"£%&\/<>| ]*\[\[[a-zé°à#§ù,.\-_!?"£%&\/<>| ]*\]\][a-zé°à#§ù,.\-_!?"£%&\/<>| ]*\]\]/ig;
+	let reg_most_internal_square = /\[\[[^[\]]*[a-z;\-."&%$£!^:,è_é§ùàòç{}' ]*\]\]/ig;
 
-			return '<PE>'+match.split(/<PE>|<\/PE>| /g).join(' ')+'</PE>';
-		})
+	if(typeof anchor !== 'undefined') {
+	  for(i=0;i<anchor.length;i++) {
+	  	for(w in texto) {
+	    if(anchor[i].indexOf('(') === -1 && anchor[i].indexOf(')') === -1 && texto[w].indexOf('<PE>')===-1) {
+	        let reg_se = new RegExp("[^[|]"+anchor[i]+'[^a-z\']|^'+anchor[i],'ig');
+	        texto[w] = texto[w].replace(reg_se, function(match){ 
+	          return match.charAt(0)+'[['+anchor[i]+']]'+match.charAt(match.length-1);
+	        });
+
+	        
+	        while(reg_nested_square.test(texto[w])) {
+	          texto[w] = texto[w].replace(reg_nested_square,function(match){
+	            return match.replace(reg_most_internal_square,anchor[i]);
+	          })
+	        }
+	      }
+	  	}
+	  }
 	}
-	*/
-	
+
+	let frasi_utili = [];
+
+	for(let i=0;i<texto.length;i++){
+		if((texto[i].indexOf('<PE>')!=-1 || texto[i].indexOf('<SEED>')!=-1 || texto[i].indexOf('<SYNONYM>')!=-1 || texto[i].indexOf('<PRONOUN>')!=-1) && (texto[i].indexOf('[[')!=-1))
+		  frasi_utili.push(text[i]);
+	}
+
+	var testo = text.join('\n');
 
 	let count_pe = (testo.match(/<PE>/g) || []).length;
 	let count_seeds = (testo.match(/<SEED>/g) || []).length;
