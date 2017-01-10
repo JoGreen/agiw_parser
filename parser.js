@@ -2,7 +2,7 @@ var fs = require("fs");
 var parseString = require('xml2js').parseString;
 var tokenizer = require('sbd');
 var unique = require('array-unique');
-var bigXml = require('big-xml');
+//var bigXml = require('big-xml');
 
 function clean_text(sentence,separators) {
     
@@ -24,6 +24,7 @@ function clean_text(sentence,separators) {
       return array_entity;
 };
 
+/*
 function remove_tonde(text){
   var text2;
   var aperte;
@@ -99,7 +100,68 @@ function remove_graffe(text,title){
    }
    return text;
 };
+*/
 
+function remove_file(text){
+
+  let reg = /\[\[File[a-z:0-9,.:;!"£$%&\/()=?'^ì_+|[\]{}èé§ùàòç\- ]*\]\]/ig;
+  while(reg.test(text) ){ //dovrebbe non servire il while, fa tutto in una passata
+    text = text.replace(reg, '');   
+  }
+  
+  text = text.replace(reg, '');
+  return text;
+
+};
+
+
+function remove_image(text){
+
+  let reg = /\[\[Image[a-z:0-9,.:;!"£$_%&\/()=?'^ì+|[\]{}èé§ùàòç\- ]*\]\]|image:[a-z:0-9,.:;!"£$%&\/()=?'^ì+|[\]è_é§ùàòç\- ]*/ig;
+  while(reg.test(text) ){ //dovrebbe non servire il while, fa tutto in una passata
+    text = text.replace(reg, '');   
+  }
+  
+  text = text.replace(reg, '');
+  return text;
+
+}
+
+
+
+function remove_tonde(text){
+
+  let reg = /[(][^()]*[a-z;\-."&%$£!^:,è_é§ùàòç{}' ]*[)]/ig;
+  while(reg.test(text) ){
+    text = text.replace(reg, '');   
+  }
+  reg = /(|)/g;
+  text = text.replace(reg, '');
+  return text;
+
+}
+
+function remove_graffe(text, title){
+  var text2 = text;
+
+  while(text2.indexOf('{|') !== -1){
+    text2 = text2.substring(text2.indexOf('{|'));
+    var s = text2.substring(0,text2.indexOf('|}')+2);
+
+    text = text.replace(s,'');
+    text2 = text2.replace(s,'');
+  } // TOGLIE TUTTE QUESTE STRUTTURE CHE SONO TIPO INFOBOX
+
+
+  let reg = /[{][^{}]*[a-z;\-."&%$èé§ùàòç?!£!^:,|()' ]*[}]/ig;
+  while(reg.test(text) ){
+    text = text.replace(reg, '');   
+  }
+  reg = /{|}/g;
+  text = text.replace(reg, '');
+  return text;
+
+};
 
 module.exports = function(file,callback) {
 
@@ -136,6 +198,8 @@ module.exports = function(file,callback) {
 
               text = remove_graffe(text,title);
               text = remove_tonde(text);
+              text = remove_file(text);
+              text = remove_image(text);
               text = text.replace(/\[\[File:.*?\.?\]\]\n|\[\[File:.*?\.?\]\]|\[\[Image:.*\.?\]\]|\[\[Image:.*\.?\]\]\n|\[http:.*?\]|\[https:.*?\]/g, '');
 
               var text2 = text;
