@@ -37,14 +37,14 @@ module.exports = function(articolo,names){
 
 	let reg_is_company = / inc[.]| dept\.| corp\.| co\./i;
 	if(reg_is_company.test(pe[0])) {
-		console.log('abbreviazione matchata');
+		
 		let split_pe = pe[0].split(' ');
 		reg_is_company = /inc[.]|dept\.|corp\.|co\./i;
 		for(q in split_pe) {
 			console.log(split_pe[q]);
 			if(reg_is_company.test(split_pe[q]) ){
 				split_pe.splice(q,1);
-				console.log('abbreviazione matchata');
+				
 			}
 		}
 		pe = pe.concat([split_pe.join(' ')]);
@@ -178,7 +178,7 @@ module.exports = function(articolo,names){
 		  frasi_utili.push(text[i]);
 	}
 
-	var testo = text.join('\n');
+	var testo = frasi_utili.join('\n');
 
 	let count_pe = (testo.match(/<PE>/g) || []).length;
 	let count_seeds = (testo.match(/<SEED>/g) || []).length;
