@@ -2,6 +2,7 @@ var fs = require("fs");
 var parseString = require('xml2js').parseString;
 var tokenizer = require('sbd');
 var unique = require('array-unique');
+var bigXml = require('big-xml');
 
 function clean_text(sentence,separators) {
     
@@ -119,6 +120,7 @@ module.exports = function(file,callback) {
            for(k=0;k<result.doc.page.length;k++) {
 
               var title = result.doc.page[k].title;
+              console.log(title);
               var id = result.doc.page[k].id;
               var text = result.doc.page[k].revision[0].text[0]._;
 

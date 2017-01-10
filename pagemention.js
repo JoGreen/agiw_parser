@@ -21,6 +21,8 @@ module.exports = function(articolo,names){
 	var synonyms = articolo.synonyms;
 	var keywords = [];
 	
+
+
 	if(articolo.pronoun === 'he' || articolo.pronoun === 'she'){
 		pe[0] = pe[0].replace(/\((.*)\)/ig,'');
 		let split_pe = pe[0].split(' ');
@@ -33,12 +35,17 @@ module.exports = function(articolo,names){
 		}
 	}
 
-	let reg_is_company = / inc\.| dept\.| corp\.| co\./i;
+	let reg_is_company = / inc[.]| dept\.| corp\.| co\./i;
 	if(reg_is_company.test(pe[0])) {
+		console.log('abbreviazione matchata');
 		let split_pe = pe[0].split(' ');
+		reg_is_company = /inc[.]|dept\.|corp\.|co\./i;
 		for(q in split_pe) {
-			if(split_pe[q].match(reg_is_company)!==null)
+			console.log(split_pe[q]);
+			if(reg_is_company.test(split_pe[q]) ){
 				split_pe.splice(q,1);
+				console.log('abbreviazione matchata');
+			}
 		}
 		pe = pe.concat([split_pe.join(' ')]);
 	}
@@ -78,8 +85,8 @@ module.exports = function(articolo,names){
 
 
 			if(tag === '<PE>' && text[i].indexOf('<PE>') === -1){
-
-				var reg = new RegExp("[^a-zA-Z[|]"+keywords[j]+"[ ']","ig");
+				let regs_list = ["[^a-zA-Z[|(]"+keywords[j]+"[ ']", "^"+keywords[j]+"[ ']"];
+				var reg = new RegExp(regs_list.join('|'),"ig");
 
 				if(text[i].indexOf(keywords[j])===0){
 						text[i] = text[i].replace(keywords[j],tag+keywords[j]+tag_closed);
@@ -98,7 +105,7 @@ module.exports = function(articolo,names){
 
 				if(text[i].indexOf('<PE>')==-1 && tag === '<SEED>' || text[i].indexOf('<PE>')==-1 && text[i].indexOf('<SEED>')==-1 && tag === '<SYNONYM>') {
 					let regs = [" The "+keywords[j]+"[^a-zA-Z]","^The"+keywords[j]+"[^a-zA-Z]"];
-					var reg = new RegExp(regs.join('|'),"ig");
+					var reg = new RegExp(regs.join('|'),"igm");
 					text[i] = text[i].replace(reg,function(match){
 					if(match=='' && text[i].indexOf(match)==0){
 						return tag+keywords[j]+tag_closed;
@@ -178,7 +185,7 @@ module.exports = function(articolo,names){
 	let count_syn = (testo.match(/<SYNONYM>/g) || []).length;
 	let count_pron = (testo.match(/<PRONOUN>/g) || []).length;
 
-	articolo.text = texto;
+	articolo.text = frasi_utili;
 
 	let articolo_obj = {id: articolo.id, keywords: keywords, primary_entity: count_pe, seeds: count_seeds, syn: count_syn, pronoun: count_pron};
 

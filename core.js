@@ -1,5 +1,6 @@
 var fs = require('fs');
 var async = require('async');
+//var parser = require('./parser_bigxml');
 var parser = require('./parser');
 var isa = require('./isa');
 var synonyms = require('./synonyms');
