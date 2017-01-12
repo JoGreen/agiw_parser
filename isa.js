@@ -12,7 +12,7 @@ function is_nationality(word) {
 	|| word === 'british' || word === 'english' || word === 'french' || word === 'irish' || word === 'spanish' || word === 'dutch' || word === 'welsh' || word === 'danish' || word === 'finnish' || word === 'polish' || word === 'swedish' || word === 'turkish';
 }
 
-module.exports = function(sentence,callback) {
+module.exports = function(sentence,n,callback) {
 
 	let abbreviations = ["c","ca","e.g","et al","etc","i.e","p.a","Dr","Gen","Hon","Mr","Mrs","Ms","Prof","Rev","Sr","Jr","St","Assn","Ave","Dept","est","fig","inc","mt","no","oz","sq","st","vs"];
 
@@ -120,7 +120,7 @@ module.exports = function(sentence,callback) {
 
 	}
 
-	console.log(sentence);
+	console.log('Articolo '+n+' '+seeds);
 	callback(seeds);
 
 };

@@ -175,7 +175,7 @@ module.exports = function(articolo,names){
 
 	for(let i=0;i<texto.length;i++){
 		if((texto[i].indexOf('<PE>')!=-1 || texto[i].indexOf('<SEED>')!=-1 || texto[i].indexOf('<SYNONYM>')!=-1 || texto[i].indexOf('<PRONOUN>')!=-1) && (texto[i].indexOf('[[')!=-1))
-		  frasi_utili.push(text[i]);
+		  frasi_utili.push(texto[i]);
 	}
 
 	var testo = frasi_utili.join('\n');
@@ -185,9 +185,9 @@ module.exports = function(articolo,names){
 	let count_syn = (testo.match(/<SYNONYM>/g) || []).length;
 	let count_pron = (testo.match(/<PRONOUN>/g) || []).length;
 
-	articolo.text = frasi_utili;
+	//articolo.text = frasi_utili;
 
-	let articolo_obj = {id: articolo.id, keywords: keywords, primary_entity: count_pe, seeds: count_seeds, syn: count_syn, pronoun: count_pron};
+	let articolo_obj = {id: articolo.id, keywords: keywords, primary_entity: count_pe, seeds: count_seeds, syn: count_syn, pronoun: count_pron, text: testo};
 
 	return articolo_obj;
 
