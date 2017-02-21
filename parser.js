@@ -5,7 +5,7 @@ var unique = require('array-unique');
 //var bigXml = require('big-xml');
 
 function clean_text(sentence,separators) {
-    
+
       var array_entity = sentence.replace(/\(.*?\)/g,'').split(new RegExp(separators.join('|'),'g'));
       for(i=0;i<array_entity.length;i++){
          array_entity.splice(i,1);
@@ -106,9 +106,9 @@ function remove_file(text){
 
   let reg = /\[\[File[a-z:0-9,.:;!"£$%&\/()=?'^ì_+|[\]{}èé§ùàòç\- ]*\]\]/ig;
   while(reg.test(text) ){ //dovrebbe non servire il while, fa tutto in una passata
-    text = text.replace(reg, '');   
+    text = text.replace(reg, '');
   }
-  
+
   text = text.replace(reg, '');
   return text;
 
@@ -119,9 +119,9 @@ function remove_image(text){
 
   let reg = /\[\[Image[a-z:0-9,.:;!"£$_%&\/()=?'^ì+|[\]{}èé§ùàòç\- ]*\]\]|image:[a-z:0-9,.:;!"£$%&\/()=?'^ì+|[\]è_é§ùàòç\- ]*/ig;
   while(reg.test(text) ){ //dovrebbe non servire il while, fa tutto in una passata
-    text = text.replace(reg, '');   
+    text = text.replace(reg, '');
   }
-  
+
   text = text.replace(reg, '');
   return text;
 
@@ -133,7 +133,7 @@ function remove_tonde(text){
 
   let reg = /[(][^()]*[a-z;\-."&%$£!^:,è_é§ùàòç{}' ]*[)]/ig;
   while(reg.test(text) ){
-    text = text.replace(reg, '');   
+    text = text.replace(reg, '');
   }
   reg = /(|)/g;
   text = text.replace(reg, '');
@@ -155,7 +155,7 @@ function remove_graffe(text, title){
 
   let reg = /[{][^{}]*[a-z;\-."&%$èé§ùàòç?!£!^:,|()' ]*[}]/ig;
   while(reg.test(text) ){
-    text = text.replace(reg, '');   
+    text = text.replace(reg, '');
   }
   reg = /{|}/g;
   text = text.replace(reg, '');
@@ -179,7 +179,7 @@ module.exports = function(file,callback) {
               return console.error(err);
            }
 
-           for(k=0;k<result.doc.page.length;k++) {
+           for(k=2000;k<result.doc.page.length;k++) {
 
               var title = result.doc.page[k].title;
               console.log(title);
@@ -239,7 +239,7 @@ module.exports = function(file,callback) {
                     testo.push(frasi[i]);
                   }
               }
-      
+
              var first_sentence = '';
 
              for(var i = 0; i < testo.length; i++){
@@ -272,9 +272,9 @@ module.exports = function(file,callback) {
 
               var testo_intero = testo.join('\n');
               var se = testo_intero.match(/\[\[[a-zA-Z 0-9.'|()-]+\]\]/g);
-              
+
               se = (se) ?  unique(se): [];
-              
+
               console.log('--------');
               let anchor = [];
               for(n in se){
@@ -311,7 +311,7 @@ module.exports = function(file,callback) {
               };
 
               var array_temp = tokenizer.sentences(testo_intero,options);
-              
+
               let callback_obj = {id: id, pe: pe, first_sentence: first_sentence, se: anchor, text: array_temp};
 
               out.push(callback_obj);

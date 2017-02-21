@@ -74,7 +74,7 @@ parser('cannaviccio1.xml',function(parser_out) {
 					}
 				});
 
-				fs.appendFile("output_data/output_tsv.tsv", pagemention_count[i].primary_entity+'\t'+pagemention_count[i].seeds+'\t'+pagemention_count[i].syn+'\t'+pagemention_count[i].pronoun+'\r\n', function(err) {
+				fs.appendFile("output_data/output_tsv.tsv",pagemention_count[i].id +'\t'+pagemention_count[i].primary_entity+'\t'+pagemention_count[i].seeds+'\t'+pagemention_count[i].syn+'\t'+pagemention_count[i].pronoun+'\r\n', function(err) {
 					if(err) {
 						return console.log(err);
 					}
